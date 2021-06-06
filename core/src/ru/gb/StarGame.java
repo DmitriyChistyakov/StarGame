@@ -12,7 +12,6 @@ public class StarGame extends Game {
 	@Override
 	public void create() {
 		setScreen(new MenuScreen());
-		//test commit 22.34
 	}
 
 }
