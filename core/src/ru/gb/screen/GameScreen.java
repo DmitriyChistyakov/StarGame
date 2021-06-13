@@ -11,9 +11,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import ru.gb.base.BaseScreen;
 import ru.gb.math.Rect;
 import ru.gb.pool.BulletPool;
+import ru.gb.pool.EnemyPool;
 import ru.gb.sprite.Background;
+import ru.gb.sprite.EnemyShip;
 import ru.gb.sprite.MainShip;
 import ru.gb.sprite.Star;
+import ru.gb.utils.EnemyEmitter;
 
 
 public class GameScreen extends BaseScreen {
@@ -27,10 +30,14 @@ public class GameScreen extends BaseScreen {
     private Star[] stars;
 
     private BulletPool bulletPool;
+    private EnemyPool enemyPool;
     private MainShip mainShip;
 
     private Music music;
     private Sound bullet;
+    private Sound laserSound;
+
+    private EnemyEmitter enemyEmitter;
 
     @Override
     public void show() {
@@ -44,8 +51,11 @@ public class GameScreen extends BaseScreen {
         }
         bulletPool = new BulletPool();
 
+        laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         bullet = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         mainShip = new MainShip(atlas, bulletPool, bullet);
+        enemyPool = new EnemyPool(worldBounds, bulletPool, laserSound);
+        enemyEmitter = new EnemyEmitter(worldBounds, enemyPool, atlas);
 
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
@@ -77,6 +87,8 @@ public class GameScreen extends BaseScreen {
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
+        enemyPool.dispose();
+        laserSound.dispose();
         bullet.dispose();
         music.dispose();
     }
@@ -111,10 +123,13 @@ public class GameScreen extends BaseScreen {
         }
         mainShip.update(delta);
         bulletPool.updateActiveSprites(delta);
+        enemyPool.updateActiveSprites(delta);
+        enemyEmitter.genegate(delta);
     }
 
     private void freeAllDestroyed() {
         bulletPool.freeAllDestroyed();
+        enemyPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -126,6 +141,7 @@ public class GameScreen extends BaseScreen {
         }
         mainShip.draw(batch);
         bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
         batch.end();
     }
 }
