@@ -140,21 +140,29 @@ public class GameScreen extends BaseScreen {
             float minDist = enemyShip.getHalfWidth() + mainShip.getHalfHeight();
             if (enemyShip.pos.dst(mainShip.pos) < minDist) {
                 enemyShip.destroy();
+                mainShip.damege(enemyShip.getDamage() * 2);
             }
         }
         List<Bullet> bulletList = bulletPool.getActiveObjects();
         for (Bullet bullet : bulletList) {
-            if (bullet.isDestroyed() || bullet.getOwner() != mainShip) {
+            if (bullet.isDestroyed()) {
                 continue;
             }
-            for (EnemyShip enemyShip : enemyShipList) {
-               if (enemyShip.isDestroyed()) {
-                   continue;
-               }
-               if(enemyShip.isBulletCollision(bullet)) {
-                   enemyShip.destroy();
-                   bullet.destroy();
-               }
+            if (bullet.getOwner() == mainShip) {
+                for (EnemyShip enemyShip : enemyShipList) {
+                    if (enemyShip.isDestroyed()) {
+                        continue;
+                    }
+                    if (enemyShip.isBulletCollision(bullet)) {
+                        enemyShip.damege(bullet.getDamage());
+                        bullet.destroy();
+                    }
+                }
+            } else {
+                if(mainShip.isBulletCollision(bullet)) {
+                    mainShip.damege(bullet.getDamage());
+                    bullet.destroy();
+                }
             }
         }
 
