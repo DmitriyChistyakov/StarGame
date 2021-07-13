@@ -7,7 +7,7 @@ public abstract class ScaleButton extends Sprite{
 
     private static final float SCALE = 0.9f;
 
-    private boolean pressed;
+    protected boolean pressed;
     private int pointer;
 
     public ScaleButton(TextureRegion region) {
